@@ -1,5 +1,6 @@
 import os
 import json
+from importlib import reload
 
 try:
     from urllib.request import urlopen
@@ -9,7 +10,6 @@ except ImportError:
 
 from django.test import TestCase
 from django.test.utils import override_settings
-from django.utils.six.moves import reload_module
 from django.contrib.gis.geos import Point
 from django.utils.html import escapejs
 from django.conf import settings as test_app_settings
@@ -26,22 +26,16 @@ GOOGLE_MAP_DEFAULT_SRID_VALUE = 4326
 
 
 class GooglePointWidgetUnitTests(TestCase):
-
     def test_widget_with_default_settings(self):
         """
             Test the widget with default settings which is defined in django settings file
         """
         zoom = 15
         default_map_center = [51.5073509, -0.12775829999]
-        widget_settings = {
-            "GooglePointFieldWidget": (
-                ("zoom", zoom),
-                ("mapCenterLocation", default_map_center),
-            )
-        }
+        widget_settings = {"GooglePointFieldWidget": (("zoom", zoom), ("mapCenterLocation", default_map_center))}
 
         with override_settings(MAP_WIDGETS=widget_settings):
-            reload_module(mw_widgets)
+            reload(mw_widgets)
             widget = mw_widgets.GooglePointFieldWidget()
             self.assertEqual(hasattr(widget, "settings"), True)
             self.assertEqual(hasattr(widget, "settings_namespace"), True)
@@ -57,7 +51,7 @@ class GooglePointWidgetUnitTests(TestCase):
             point = Point(-104.9903, 39.7392, srid=DJANGO_DEFAULT_SRID_VALUE)
             widget_html_elem_id = "id_location"
             widget_html_elem_name = "location"
-            result = widget.render(name=widget_html_elem_name, value=point, attrs={'id': widget_html_elem_id})
+            result = widget.render(name=widget_html_elem_name, value=point, attrs={"id": widget_html_elem_id})
             self.assertIn(widget.serialize(point), result)
             self.assertIn(get_textarea_html(widget_html_elem_id, widget_html_elem_name, point), result)
             self.assertIn(escapejs(options_str), result)
@@ -79,12 +73,7 @@ class GooglePointWidgetUnitTests(TestCase):
         """
         zoom = 11
         default_map_center = [52.5073509, -0.23775829999]
-        widget_settings = {
-            "GooglePointFieldWidget": (
-                ("zoom", zoom),
-                ("mapCenterLocation", default_map_center),
-            )
-        }
+        widget_settings = {"GooglePointFieldWidget": (("zoom", zoom), ("mapCenterLocation", default_map_center))}
 
         widget = mw_widgets.GooglePointFieldWidget(settings=widget_settings)
         self.assertEqual(hasattr(widget, "settings"), True)
@@ -101,7 +90,7 @@ class GooglePointWidgetUnitTests(TestCase):
         point = Point(-105.9903, 38.73922, srid=DJANGO_DEFAULT_SRID_VALUE)
         widget_html_elem_id = "id_location"
         widget_html_elem_name = "location"
-        result = widget.render(name=widget_html_elem_name, value=point, attrs={'id': widget_html_elem_id})
+        result = widget.render(name=widget_html_elem_name, value=point, attrs={"id": widget_html_elem_id})
         self.assertIn(widget.serialize(point), result)
         self.assertIn(get_textarea_html(widget_html_elem_id, widget_html_elem_name, point), result)
         self.assertIn(escapejs(options_str), result)
@@ -118,7 +107,7 @@ class GooglePointWidgetUnitTests(TestCase):
         widget_html_elem_id = "id_location"
         widget_html_elem_name = "location"
         widget = mw_widgets.GooglePointFieldWidget(map_srid=3857)
-        result = widget.render(name=widget_html_elem_name, value=point, attrs={'id': widget_html_elem_id})
+        result = widget.render(name=widget_html_elem_name, value=point, attrs={"id": widget_html_elem_id})
 
         ogr = point.ogr
         ogr.transform(GOOGLE_MAP_DEFAULT_SRID_VALUE)
@@ -127,22 +116,16 @@ class GooglePointWidgetUnitTests(TestCase):
 
 
 class GooglePointInlineWidgetUnitTests(TestCase):
-
     def test_widget_with_default_settings(self):
         """
             Test widget with default settings which is defined in django settings file
         """
         zoom = 15
         default_map_center = [51.5073509, -0.12775829999]
-        widget_settings = {
-            "GooglePointFieldWidget": (
-                ("zoom", zoom),
-                ("mapCenterLocation", default_map_center),
-            )
-        }
+        widget_settings = {"GooglePointFieldWidget": (("zoom", zoom), ("mapCenterLocation", default_map_center))}
 
         with override_settings(MAP_WIDGETS=widget_settings):
-            reload_module(mw_widgets)
+            reload(mw_widgets)
             widget = mw_widgets.GooglePointFieldInlineWidget()
             self.assertEqual(hasattr(widget, "settings"), True)
             self.assertEqual(hasattr(widget, "settings_namespace"), True)
@@ -158,7 +141,7 @@ class GooglePointInlineWidgetUnitTests(TestCase):
             point = Point(-104.9903, 39.73922, srid=DJANGO_DEFAULT_SRID_VALUE)
             widget_html_elem_id = "id_location"
             widget_html_elem_name = "location"
-            result = widget.render(name=widget_html_elem_name, value=point, attrs={'id': widget_html_elem_id})
+            result = widget.render(name=widget_html_elem_name, value=point, attrs={"id": widget_html_elem_id})
             self.assertIn(widget.serialize(point), result)
             self.assertIn(get_textarea_html(widget_html_elem_id, widget_html_elem_name, point), result)
 
@@ -167,7 +150,7 @@ class GooglePointInlineWidgetUnitTests(TestCase):
             self.assertIn(widget.serialize(point), result)
 
             # test widget as a formset empty form
-            result = widget.render(name=widget_html_elem_name, value=point, attrs={'id': widget_html_elem_id})
+            result = widget.render(name=widget_html_elem_name, value=point, attrs={"id": widget_html_elem_id})
             self.assertIn(widget.serialize(point), result)
             inline_widget_data = widget.get_js_widget_data(widget_html_elem_name, widget_html_elem_id)
             self.assertIn(escapejs(json.dumps(inline_widget_data)), result)
@@ -185,12 +168,7 @@ class GooglePointInlineWidgetUnitTests(TestCase):
         """
         zoom = 11
         default_map_center = [52.5073509, -0.23775829999]
-        widget_settings = {
-            "GooglePointFieldWidget": (
-                ("zoom", zoom),
-                ("mapCenterLocation", default_map_center),
-            )
-        }
+        widget_settings = {"GooglePointFieldWidget": (("zoom", zoom), ("mapCenterLocation", default_map_center))}
 
         widget = mw_widgets.GooglePointFieldInlineWidget(settings=widget_settings)
         self.assertEqual(hasattr(widget, "settings"), True)
@@ -207,7 +185,7 @@ class GooglePointInlineWidgetUnitTests(TestCase):
         point = Point(-105.9903, 38.73922, srid=DJANGO_DEFAULT_SRID_VALUE)
         widget_html_elem_id = "id_location"
         widget_html_elem_name = "location"
-        result = widget.render(name=widget_html_elem_name, value=point, attrs={'id': widget_html_elem_id})
+        result = widget.render(name=widget_html_elem_name, value=point, attrs={"id": widget_html_elem_id})
         self.assertIn(widget.serialize(point), result)
         self.assertIn(get_textarea_html(widget_html_elem_id, widget_html_elem_name, point), result)
 
@@ -217,14 +195,13 @@ class GooglePointInlineWidgetUnitTests(TestCase):
 
         # test widget as a formset empty form
         widget_html_elem_id = "__prefix__id_location"
-        result = widget.render(name=widget_html_elem_name, value=point, attrs={'id': widget_html_elem_id})
+        result = widget.render(name=widget_html_elem_name, value=point, attrs={"id": widget_html_elem_id})
         self.assertIn(widget.serialize(point), result)
         inline_widget_data = widget.get_js_widget_data(widget_html_elem_name, widget_html_elem_id)
         self.assertIn(escapejs(json.dumps(inline_widget_data)), result)
 
 
 class GoogleStaticMapWidgetUnitTests(TestCase):
-
     def test_widget_with_default_settings(self):
         """
             Test the widget with default settings which is defined in django settings file
@@ -232,15 +209,12 @@ class GoogleStaticMapWidgetUnitTests(TestCase):
         zoom = 13
         map_size = "200x200"
         widget_settings = {
-            "GoogleStaticMapWidget": (
-                ("zoom", zoom),
-                ("size", map_size),
-            ),
+            "GoogleStaticMapWidget": (("zoom", zoom), ("size", map_size)),
             "GOOGLE_MAP_API_KEY": GOOGLE_MAP_API_KEY,
         }
 
         with override_settings(MAP_WIDGETS=widget_settings):
-            reload_module(mw_widgets)
+            reload(mw_widgets)
             widget = mw_widgets.GoogleStaticMapWidget()
             settings = widget.map_settings
 
@@ -252,7 +226,7 @@ class GoogleStaticMapWidgetUnitTests(TestCase):
             point = Point(-105.9903, 38.7392)
             widget_html_elem_id = "id_location"
             widget_html_elem_name = "location"
-            result = widget.render(name=widget_html_elem_name, value=point, attrs={'id': widget_html_elem_id})
+            result = widget.render(name=widget_html_elem_name, value=point, attrs={"id": widget_html_elem_id})
             map_image_url = widget.get_image_url(point)
             self.assertIn(GOOGLE_MAP_API_KEY, map_image_url)
             self.assertIn(html_escape(map_image_url), result)
@@ -260,13 +234,13 @@ class GoogleStaticMapWidgetUnitTests(TestCase):
             # test map_image_url
             res = urlopen(map_image_url)
             self.assertEqual(res.getcode(), 200)
-            if hasattr(res.info(), 'type'):
+            if hasattr(res.info(), "type"):
                 self.assertEqual(res.info().type, "image/png")
             else:
                 self.assertEqual(res.info().get_content_type(), "image/png")
 
             # test map_image_url with `None` value
-            result = widget.render(name=widget_html_elem_name, value=None, attrs={'id': widget_html_elem_id})
+            result = widget.render(name=widget_html_elem_name, value=None, attrs={"id": widget_html_elem_id})
             map_image_url = widget.get_image_url(None)
             self.assertIn(map_image_url, result)
 
@@ -278,15 +252,12 @@ class GoogleStaticMapWidgetUnitTests(TestCase):
         map_size = "100x100"
 
         widget_settings = {
-            "GoogleStaticMapWidget": (
-                ("zoom", zoom),
-                ("size", map_size),
-            ),
+            "GoogleStaticMapWidget": (("zoom", zoom), ("size", map_size)),
             "GOOGLE_MAP_API_KEY": GOOGLE_MAP_API_KEY,
         }
 
         with override_settings(MAP_WIDGETS=widget_settings):
-            reload_module(mw_widgets)
+            reload(mw_widgets)
             widget = mw_widgets.GoogleStaticMapWidget(zoom=zoom, size=map_size)
             settings = widget.map_settings
 
@@ -298,7 +269,7 @@ class GoogleStaticMapWidgetUnitTests(TestCase):
             point = Point(-105.9903, 38.7392)
             widget_html_elem_id = "id_location"
             widget_html_elem_name = "location"
-            result = widget.render(name=widget_html_elem_name, value=point, attrs={'id': widget_html_elem_id})
+            result = widget.render(name=widget_html_elem_name, value=point, attrs={"id": widget_html_elem_id})
             map_image_url = widget.get_image_url(point)
             self.assertIn(GOOGLE_MAP_API_KEY, map_image_url)
             self.assertIn(html_escape(map_image_url), result)
@@ -306,14 +277,13 @@ class GoogleStaticMapWidgetUnitTests(TestCase):
             # test map_image_url
             res = urlopen(map_image_url)
             self.assertEqual(res.getcode(), 200)
-            if hasattr(res.info(), 'type'):
+            if hasattr(res.info(), "type"):
                 self.assertEqual(res.info().type, "image/png")
             else:
                 self.assertEqual(res.info().get_content_type(), "image/png")
 
 
 class GoogleStaticOverlayMapWidgetUnitTests(TestCase):
-
     def test_widget_with_default_settings(self):
         """
             Test the widget with default settings which is defined in django settings file
@@ -331,7 +301,7 @@ class GoogleStaticOverlayMapWidgetUnitTests(TestCase):
         }
 
         with override_settings(MAP_WIDGETS=widget_settings):
-            reload_module(mw_widgets)
+            reload(mw_widgets)
             widget = mw_widgets.GoogleStaticOverlayMapWidget()
             settings = widget.map_settings
 
@@ -344,7 +314,7 @@ class GoogleStaticOverlayMapWidgetUnitTests(TestCase):
             point = Point(-92.9903, 34.7392)
             widget_html_elem_id = "id_location"
             widget_html_elem_name = "location"
-            result = widget.render(name=widget_html_elem_name, value=point, attrs={'id': widget_html_elem_id})
+            result = widget.render(name=widget_html_elem_name, value=point, attrs={"id": widget_html_elem_id})
             map_image_url = widget.get_image_url(point)
             self.assertIn(GOOGLE_MAP_API_KEY, map_image_url)
             self.assertIn(html_escape(map_image_url), result)
@@ -352,7 +322,7 @@ class GoogleStaticOverlayMapWidgetUnitTests(TestCase):
             # test map_image_url
             res = urlopen(map_image_url)
             self.assertEqual(res.getcode(), 200)
-            if hasattr(res.info(), 'type'):
+            if hasattr(res.info(), "type"):
                 self.assertEqual(res.info().type, "image/png")
             else:
                 self.assertEqual(res.info().get_content_type(), "image/png")
@@ -361,13 +331,13 @@ class GoogleStaticOverlayMapWidgetUnitTests(TestCase):
             thumbnail_url = widget.get_thumbnail_url(point)
             res = urlopen(thumbnail_url)
             self.assertEqual(res.getcode(), 200)
-            if hasattr(res.info(), 'type'):
+            if hasattr(res.info(), "type"):
                 self.assertEqual(res.info().type, "image/png")
             else:
                 self.assertEqual(res.info().get_content_type(), "image/png")
 
             # test map_image_url with `None` value
-            result = widget.render(name=widget_html_elem_name, value=None, attrs={'id': widget_html_elem_id})
+            result = widget.render(name=widget_html_elem_name, value=None, attrs={"id": widget_html_elem_id})
             thumbnail_url = widget.get_thumbnail_url(None)
             self.assertIn(thumbnail_url, result)
 
@@ -379,13 +349,13 @@ class GoogleStaticOverlayMapWidgetUnitTests(TestCase):
         map_size = "300x300"
         thumbnail_size = "75x75"
 
-        widget_settings = {
-            "GOOGLE_MAP_API_KEY": GOOGLE_MAP_API_KEY,
-        }
+        widget_settings = {"GOOGLE_MAP_API_KEY": GOOGLE_MAP_API_KEY}
 
         with override_settings(MAP_WIDGETS=widget_settings):
-            reload_module(mw_widgets)
-            widget = mw_widgets.GoogleStaticOverlayMapWidget(zoom=zoom, size=map_size, thumbnail_size=thumbnail_size)
+            reload(mw_widgets)
+            widget = mw_widgets.GoogleStaticOverlayMapWidget(
+                zoom=zoom, size=map_size, thumbnail_size=thumbnail_size
+            )
             settings = widget.map_settings
 
             # test `map_settings` method
@@ -396,7 +366,7 @@ class GoogleStaticOverlayMapWidgetUnitTests(TestCase):
             point = Point(-105.9903, 38.7392)
             widget_html_elem_id = "id_location"
             widget_html_elem_name = "location"
-            result = widget.render(name=widget_html_elem_name, value=point, attrs={'id': widget_html_elem_id})
+            result = widget.render(name=widget_html_elem_name, value=point, attrs={"id": widget_html_elem_id})
             map_image_url = widget.get_image_url(point)
             self.assertIn(GOOGLE_MAP_API_KEY, map_image_url)
             self.assertIn(html_escape(map_image_url), result)
@@ -404,7 +374,7 @@ class GoogleStaticOverlayMapWidgetUnitTests(TestCase):
             # test map_image_url
             res = urlopen(map_image_url)
             self.assertEqual(res.getcode(), 200)
-            if hasattr(res.info(), 'type'):
+            if hasattr(res.info(), "type"):
                 self.assertEqual(res.info().type, "image/png")
             else:
                 self.assertEqual(res.info().get_content_type(), "image/png")
@@ -413,7 +383,7 @@ class GoogleStaticOverlayMapWidgetUnitTests(TestCase):
             thumbnail_url = widget.get_thumbnail_url(point)
             res = urlopen(thumbnail_url)
             self.assertEqual(res.getcode(), 200)
-            if hasattr(res.info(), 'type'):
+            if hasattr(res.info(), "type"):
                 self.assertEqual(res.info().type, "image/png")
             else:
                 self.assertEqual(res.info().get_content_type(), "image/png")

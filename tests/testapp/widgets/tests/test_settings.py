@@ -2,7 +2,6 @@ from collections import OrderedDict
 
 from django.test import TestCase
 from django.test.utils import override_settings
-from django.utils.six.moves import reload_module
 
 from mapwidgets.settings import MapWidgetSettings, DEFAULTS
 
@@ -29,14 +28,8 @@ class WidgetSettingsTests(TestCase):
         static_map_size = "320x320"
 
         custom_settings = {
-            "GooglePointFieldWidget": (
-                ("zoom", zoom),
-                ("mapCenterLocation", map_center),
-            ),
-            "GoogleStaticMapWidget": (
-                ("zoom", zoom),
-                ("size", static_map_size),
-            )
+            "GooglePointFieldWidget": (("zoom", zoom), ("mapCenterLocation", map_center)),
+            "GoogleStaticMapWidget": (("zoom", zoom), ("size", static_map_size)),
         }
 
         with override_settings(MAP_WIDGETS=custom_settings):
@@ -54,11 +47,7 @@ class WidgetSettingsTests(TestCase):
         with override_settings(MAP_WIDGETS="invalid_map_widgets_settings_type"):
             self.assertRaises(TypeError, lambda: getattr(MapWidgetSettings(), "GooglePointFieldWidget"))
 
-        invalid_tuple_settings = {
-            "GooglePointFieldWidget": (
-                ("zoom", 12, "invalid_value"),
-            ),
-        }
+        invalid_tuple_settings = {"GooglePointFieldWidget": (("zoom", 12, "invalid_value"),)}
 
         with override_settings(MAP_WIDGETS=invalid_tuple_settings):
             self.assertRaises(ValueError, lambda: getattr(MapWidgetSettings(), "GooglePointFieldWidget"))
@@ -67,4 +56,7 @@ class WidgetSettingsTests(TestCase):
         self.assertRaises(TypeError, lambda: MapWidgetSettings(app_settings=1))
 
         # test defaults parameter with invalid value
-        self.assertRaises(ValueError, lambda: getattr(MapWidgetSettings(defaults=invalid_tuple_settings), "GooglePointFieldWidget"))
+        self.assertRaises(
+            ValueError,
+            lambda: getattr(MapWidgetSettings(defaults=invalid_tuple_settings), "GooglePointFieldWidget"),
+        )
